@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX Message Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F0F0F0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            color:black;
+        
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Makes padding included in width */
+        }
+
+        input[type="submit"] {
+            background: linear-gradient(135deg, #85ffbd, #fffb7d);
+            color: black;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        #message-list{
+            padding-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Submit Your Message</h2>
+    <form id="ajax-form" method="POST" action="/ajaxmessage">
+        
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="country">Country:</label>
+        <input type="text" name="country" id="country" required>
+
+        <label for="message">Message:</label>
+        <input type="text" name="message" id="message" required>
+        <input type="submit" value="Submit">
+    </form>
+    <div id="message-list">
+         <!-- The list of messages will be displayed here -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('ajax-form');
+            const messageDiv = document.getElementById('message-list');
+
+            
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                // Data collection:
+                const formData = {
+                    name: document.getElementById('name').value,
+                    country: document.getElementById('country').value,
+                    message: document.getElementById('message').value
+                };
+
+                axios.post('/ajaxmessage', {
+                    name: formData.name,
+                    country: formData.country,
+                    message: formData.message
+                })
+                .then(response => {
+                    // Assuming the server returns a single message object in an array
+                    const item = response.data[0]; // Since returning an array with one object
+                    const messageItem = document.createElement('div');
+                    messageItem.textContent = `${item.name} from ${item.country} said: ${item.message}`;
+                    messageDiv.appendChild(messageItem);
+                })
+                .catch(error => {
+                    console.error("Error posting message", error); // Log the error for debugging
+                });
+            });
+        });
+    </script>
+</body>
+</html>
